@@ -1,4 +1,6 @@
 #pragma once
+#include "level.h"
+
 #include <SFML/Graphics.hpp>
 
 class Engine {
@@ -15,4 +17,5 @@ public:
 private:
 	sf::Font standard_font_;
 	sf::RenderWindow window_;
+	Level level_{ 10,10 };
 };

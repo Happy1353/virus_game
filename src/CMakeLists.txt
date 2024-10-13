@@ -7,6 +7,7 @@ target_sources(sfml_example_game PRIVATE
     "main.cpp"
     "engine.h"
     "engine.cpp"
+    "level.h"
  )
 
 if(WIN32)
