@@ -23,9 +23,9 @@ void Engine::CreateWindow() {
     window_.create({ ww, wh }, "CMake SFML Project", sf::Style::Default, settings);
     window_.setFramerateLimit(100);
 
-    sf::View view = window_.getView();
-    view.setCenter(sf::Vector2f{ 0.0, 0.0 });
-    window_.setView(view);
+    //sf::View view = window_.getView();
+    //view.setCenter(sf::Vector2f{ 0.0, 0.0 });
+    //window_.setView(view);
 }
 
 void Engine::InitializeLevel() {
@@ -49,7 +49,7 @@ void Engine::UserInput() {
             sf::Transform trans;
             trans.translate(- new_size_float / 2.0f);
             visibleArea = trans.transformRect(visibleArea);
-            window_.setView(sf::View(visibleArea));
+            //window_.setView(sf::View(visibleArea));
         }
 
         if (event.type == sf::Event::MouseButtonPressed) {
@@ -62,7 +62,12 @@ void Engine::UserInput() {
 
 
 void Engine::Render() {
+
+
     window_.clear();
+
+    level_.Render(window_);
+
     window_.display();
 }
 

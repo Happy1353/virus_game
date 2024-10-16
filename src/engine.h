@@ -1,7 +1,7 @@
 #pragma once
-#include "level.h"
-
 #include <SFML/Graphics.hpp>
+
+#include "level.h"
 
 class Engine {
 public:
