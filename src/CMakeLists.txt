@@ -8,7 +8,7 @@ target_sources(sfml_example_game PRIVATE
     "engine.h"
     "engine.cpp"
     "level.h"
- )
+    "level.cpp")
 
 if(WIN32)
     add_custom_command(
