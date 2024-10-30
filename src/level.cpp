@@ -196,14 +196,14 @@ bool Level::TestRightDiagonal(Cell symbol, size_t i, size_t j) const {
 }
 
 bool Level::TestLeftDiagonal(Cell symbol, size_t i, size_t j) const {
-	if (i >= width_ || j >= height_)
+	if (j >= height_)
 		return false;
 
 	for (size_t k = 0; k < victory_goal_; ++k) {
-		if (i < k || j < k)
+		if (i + k >= width_ || j < k)
 			return false;
 
-		if (matrix_[i - k][j - k] != symbol)
+		if (matrix_[i + k][j - k] != symbol)
 			return false;
 	}
 	return true;
