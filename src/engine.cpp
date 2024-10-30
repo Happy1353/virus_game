@@ -1,8 +1,8 @@
+#include "engine.h"
+
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
-
-#include "engine.h"
 
 sf::RenderWindow& Engine::GetWindow() {
     return window_;
@@ -20,12 +20,8 @@ void Engine::CreateWindow() {
 
     const unsigned int ww = 1300u;
     const unsigned int wh = 1000u;
-    window_.create({ ww, wh }, "CMake SFML Project", sf::Style::Default, settings);
+    window_.create({ ww, wh }, "CMake SFML Project", sf::Style::Titlebar | sf::Style::Close, settings);
     window_.setFramerateLimit(100);
-
-    //sf::View view = window_.getView();
-    //view.setCenter(sf::Vector2f{ 0.0, 0.0 });
-    //window_.setView(view);
 }
 
 void Engine::InitializeLevel() {

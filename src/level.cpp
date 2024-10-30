@@ -1,8 +1,8 @@
+#include "level.h"
+
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
-
-#include "level.h"
 
 const sf::Vector2f Level::board_pos_{ 250.f, 100.f };
 const float Level::cell_size_ = 80.f;
@@ -114,7 +114,7 @@ bool Level::TestVictory(Cell symbol) const {
 bool Level::TestDraw() const {
 	for (size_t i = 0; i < width_; ++i) {
 		for (size_t j = 0; j < width_; ++j) {
-			if (matrix_[i][j] != Cell::kEmpty)
+			if (matrix_[i][j] == Cell::kEmpty)
 				return false;
 		}
 	}
