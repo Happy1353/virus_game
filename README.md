@@ -1,93 +1,162 @@
-# example_sfml_game
+# Практикум 318 гр. -- проектное задание "Игра Вирусы"
 
+## Постановка задачи
 
+В задании требуется реализовать игру "Вирусы". Пример готовой реализации можно
+посмотреть [здесь](https://metaschool.ru/pub/games/viruswar/viruswar.php).
+Правила самой игры описаны ниже. Решение должно быть подготовлено в виде
+git-репозитория, оформленного на кафедральном GitLab и содержащего все файлы
+проекта. Проект пишется с соблюдением принципов ООП и должен состоять из
+нескольких (два или более .cpp файла) модулей, которые должны собираться
+программой CMake.  Для всех написанных классов необходимо реализовать
+юнит-тесты с использованием библиотеки gtest, а также написать краткую
+документацию.
 
-## Getting started
+## Критерии оценивания
+ 
+Задание состоит из базовой и нескольких дополнительных частей. Помимо
+реализованного функционала, проект будет оцениваться исходя из следующих
+критериев:
+- Использование системы контроля версий и системы сборки CMake. Важно не просто
+  загрузить файлы в git на последнем этапе написания проекта, а *вести*
+  разработку проекта в git с самого начала. Здесь будут оцениваться такие вещи
+  как наличие проектной истории, осмысленные сообщения в коммитах и т.п.
+- Наличие юнит-тестов и их полнота. Требуется написать юнит-тесты для всех
+  публичных функций классов, которые покрывают основные варианты использования
+  этих функций и возможные граничные ситуации.
+- Документирование кода. Не следует писать комментарии к каждой строке, но все
+  основные классы и публичные методы должны быть разумно документированы. Нужно
+  уделить особое внимание описанию тех или иных особенностей использования
+  методов.
+- Проектирование классов. Недостаточно просто написать код в одной функции или
+  одном классе, надо разбить программу на логические модули и разделить
+  функционал по различным классам. Здесь будут оцениваться такие вещи как
+  дублирование кода или функционала, оправданность того или иного
+  проектировочного решения и т.п.
+- Следование выбранному стилю кодирования.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Правила игры
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Игра для двух и более игроков на клетчатом поле 10x10. В этой игре каждый игрок
+будет создавать и развивать свою колонию вирусов, стремясь уничтожить
+противников.  Вирусы обозначаются любыми знаками, обычно, крестиками разных
+цветов.  Игра ведётся по следующим правилам:
 
-## Add your files
+- Игроки ходят по-очереди. Ход каждого игрока состоит из трёх действий. За одно
+  действие можно поставить одного своего вируса или съесть одного вражеского
+  вируса, превратив его в свою крепость. Съеденные вирусы (крепости) съесть
+  повторно уже нельзя.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- Действия пропускать нельзя. При невозможности совершить действие игрок
+  проигрывает.
 
-```
-cd existing_repo
-git remote add origin https://mks2.cs.msu.ru/brdanilov/example_sfml_game.git
-git branch -M main
-git push -uf origin main
-```
+- Множество соседних (диагональные клетки также считаются соседними) друг с
+  другом крепостей образуют цепь.
 
-## Integrate with your tools
+- Цепь называется живой, если рядом с одной из крепостей этой цепи стоит вирус
+  того же самого игрока, иначе цепь -- мертвая.
 
-- [ ] [Set up project integrations](https://mks2.cs.msu.ru/brdanilov/example_sfml_game/-/settings/integrations)
+- Поставить вирус или съесть вражеского вируса можно либо 1) на соседней клетке
+  со своим живым (несъеденным) вирусом, либо 2) на соседней клетке со своей
+  живой цепью.
 
-## Collaborate with your team
+- Первый игрок начинает ставить вирусы в левом верхнем углу, а второй -- в
+  правом нижнем. Если игроков более двух (но не более четырёх), то третий игрок
+  начинает в левом нижнем углу, а четвёртый -- в правом верхнем.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+- Выигрывает тот единственный игрок, который остался в игре последним.
 
-## Test and Deploy
+- Если игроков более, чем два, то вирусы проигравшего игрока остаются на поле,
+  их могут съесть другие игроки.
+ 
+## Базовая часть (6 баллов)
 
-Use the built-in continuous integration in GitLab.
+Базовая часть включает в себя реализацию логики игры для двух игроков в режиме
+"hot-seat" (проверка правильности совершаемых ходов, обнаружение момента
+окончания игры и выявление победителя) и пользовательского интерфейса (ввод
+данных о совершаемых действиях, отображение ходов, сообщение о победе или
+поражении). Логику нужно реализовывать в отдельном классе (например, можно его
+назвать TGameLogic). Этот класс ничего не должен знать про пользовательский
+интерфейс, т.е. логика взаимодействия TGameLogic и TDisplay должна находиться
+где-то ещё.  Не стоит реализовывать эту логику в main.cpp, вместо этого надо
+завести для этого отдельный класс (назовём его, например, TGameEngine).
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+За выполнение базовой части можно получить до 6 баллов. При выполнении задания
+можно пользоваться настоящим шаблоном в качестве отправной точки.
 
-***
+## Дополнительные части задания
 
-# Editing this README
+Дополнительные задания можно реализовывать *только* если была реализована
+базовая часть задания. Должна быть реализована возможность настройки параметров
+нестандартных вариантов игры без перекомпиляции программы. Такую настройку можно
+осуществить по-разному, например: при помощи указания ключей и параметров через
+командную строку; указанием настроек через специальный конфигурационный файл,
+лежащий в одной директории с запускаемой программой и читающийся при её запуске;
+или через реализацию настроек в графическом интерфейсе программы перед запуском
+игры.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Замкнутое игровое поле (1 балл)
 
-## Suggestions for a good README
+Реализовать топологию тора на игровом поле, при которой клетки, находящиеся у
+правого его края, являются соседними с клетками левого края, а клетки,
+находящиеся у нижнего края поля, -- соседние с верхними. В этом режиме игры
+первый игрок ставит свой первый вирус в любом месте поля. Второй 
+игрок ставит свой первый вирус на расстоянии не менее 4 клеток от вирусов
+первого игрока (соседние клетки считаются находящимися на расстоянии 1).
+ 
+### Игра по сети (3 балла)
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+Реализовать возможность игры по сети.
 
-## Name
-Choose a self-explaining name for your project.
+### Игра с компьютером (до 3 баллов)
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Реализовать искусственный интеллект "бота", который будет играть за одного из
+игроков.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+При оценке этого задания учитывается степень "интеллекта" бота. Реализация
+стратегии "делать случайное (первое попавшееся и т.п.) возможное действие"
+оценивается в 1 балл при условии, что бот играет по правилам и не делает
+невозможных ходов.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Нестандартное игровое поле и сохранение игры (2 балла)
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+Реализовать сохранение игры в файл и возможность игры до 10 игроков на игровом
+поле, отличном от стандартного. Игровое поле читается из текстового файла,
+который задаётся аргументом в командной строке. В первой строке этого файла
+через пробел записано 5 целых положительных числа: первое -- ширина q игрового
+поля, второе -- высота p игрового поля, третье -- число n игроков, четвёртое --
+номер игрока, который ходит первым, и пятое -- число оставшихся у этого игрока
+ходов (1, 2 или 3). Далее идут p строк по q символов в строке.
+На игровом поле могут быть непроходимые клетки (т.е. клетки, в которые нельзя
+ставить вирусы), которые обозначаются символом решётка, а обычные клетки
+кодируются символом точка. Вирус игрока с номером i, обозначается i-й строчной
+буквой английского алфавита, а его крепость -- аналогичной заглавной буквой.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+При реализации нестандартного игрового поля можно дополнительно реализовать
+клетки со специальными возможностями. 
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+#### Специальные возможности: нейтральные вирусы и крепости (1 балл)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+На поле перед началом игры расставлены вирусы и крепости "нейтрального" игрока,
+которые обозначаются соответственно буквами z (строчная) и Z (прописная).
+Вирусы нейтрального игрока можно съесть, первратив их в свою крепость.  Крепости
+нейтрального игрока могут быть частью цепи любого игрока (в том числе, они могут
+являться звеньями цепей нескольких игроков одновременно).
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+#### Специальные возможности: порталы (1 балл)
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+На поле расставлены порталы -- клетки, обозначаемые цифрами от 0 до 9.  Клетка,
+соседняя с порталом, обозначенным цифрой j, является соседней с любой клеткой
+соседней с некоторым (возможно, тем же самым) порталом, обозначенным этой же
+цифрой j.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+#### Графический редактор уровней (до 2 баллов)
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+Реализовать графический пользовательский интерфейс для "рисования" игрового
+поля. Если реализованы какие-то специальные возможности, то они должны быть
+отражены и в графическом редакторе.
 
-## License
-For open source projects, say how it is licensed.
+Реализация графического редактора оценивается в 1 балл, кроме того можно
+получить 0.5 балла за реализацию расстановки нейтральных вирусов и крепостей в
+редакторе и 0.5 балла за реализацию расстановки порталов в редакторе.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
