@@ -1,7 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-#include "level.h"
+#include "common.h"
+#include "display.h"
+#include "game_logic.h"
 
 class Engine {
 public:
@@ -9,20 +11,17 @@ public:
 
 	void LoadResources();
 	void CreateWindow();
-	void InitializeLevel();
+	void InitializeLogic();
+	void InitializeGraphics();
 	void UserInput();
 	void Render();
-	void Shutdown();
-	bool IsGameOver() const;
-
-private:
-	static Cell Symbol(bool turn);
 	
 private:
 	sf::Font standard_font_;
 	sf::RenderWindow window_;
-	Level level_{ 10,10 };
-	bool turn_ = true;
+	std::shared_ptr<GameLogic> game_logic_;
+	std::shared_ptr<Display> display_;
 	bool game_over_ = false;
 	Cell winner_ = Cell::kEmpty;
+	int outcome_counter_[3] = { 0, 0, 0 };
 };

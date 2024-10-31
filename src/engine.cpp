@@ -1,14 +1,18 @@
 #include "engine.h"
 
+#include <cassert>
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
+
+#include "common.h"
 
 sf::RenderWindow& Engine::GetWindow() {
     return window_;
 }
 
 void Engine::LoadResources() {
+    // If you're working on Linux put path to standard font:
     if (!standard_font_.loadFromFile("C:\\Windows\\Fonts\\arial.ttf")) {
         std::cout << "Error loading standard font" << std::endl;
     }
@@ -24,7 +28,28 @@ void Engine::CreateWindow() {
     window_.setFramerateLimit(100);
 }
 
-void Engine::InitializeLevel() {
+void Engine::InitializeLogic() {
+    assert(!game_logic_);
+
+    game_logic_ = std::make_shared<GameLogic>(10, 10, 5, Cell::kCross);
+}
+
+void Engine::InitializeGraphics() {
+    assert(!display_);
+    assert(game_logic_);
+
+    DisplaySettings settings;
+    settings.board_width = game_logic_->GetWidth();
+    settings.board_height = game_logic_->GetHeight();
+    settings.board_position = sf::Vector2f{ 250.f, 100.f };
+    settings.cell_size = 80.f;
+    settings.cell_padding = 5.f;
+    settings.shape_thickness = 5.f;
+    settings.board_color = sf::Color::Black;
+    settings.cross_color = sf::Color::Red;
+    settings.zero_color = sf::Color::Blue;
+
+    display_ = std::make_shared<Display>(window_, settings);
 }
 
 void Engine::UserInput() {
@@ -33,39 +58,22 @@ void Engine::UserInput() {
             window_.close();
         }
 
-        if (event.type == sf::Event::KeyPressed) {
-        }
-
-
-        if (event.type == sf::Event::Resized)
-        {
-            sf::Vector2f new_size_float{ float(event.size.width), float(event.size.height) };
-            sf::FloatRect visibleArea(sf::Vector2f{ 0, 0 }, new_size_float);
-
-            sf::Transform trans;
-            trans.translate(- new_size_float / 2.0f);
-            visibleArea = trans.transformRect(visibleArea);
-            //window_.setView(sf::View(visibleArea));
-        }
-
         if (event.type == sf::Event::MouseButtonPressed) {
-            if (event.mouseButton.button == sf::Mouse::Left) {
+            if(event.mouseButton.button == sf::Mouse::Left && !game_over_) {
                 sf::Vector2i pixel(event.mouseButton.x, event.mouseButton.y);
-                auto c = level_.MapPixelToMatrixCoords(window_, pixel);
-                if (c.first >= 0 && c.second >= 0 &&
-                    level_.Get(c.first, c.second) == Cell::kEmpty) {
-                   Cell current_symbol = Symbol(turn_);
-                   level_.Put(c.first, c.second, current_symbol);
-                   if (level_.TestVictory(current_symbol)) {
-                       game_over_ = true;
-                       winner_ = current_symbol;
-                   }
-                   if (level_.TestDraw()) {
-                       game_over_ = true;
-                       winner_ = Cell::kEmpty;
-                   }
-                   turn_ = !turn_;
+                std::pair<size_t, size_t> mcoord;
+                if (display_->MapPixelToMatrixCoords(pixel, mcoord) &&
+                    game_logic_->GetCell(mcoord.first, mcoord.second) == Cell::kEmpty) {
+                    game_logic_->MakeTurn(mcoord.first, mcoord.second);
+                    game_over_ = game_logic_->TestVictoryConditions(winner_);
+                    if (game_over_) {
+                        outcome_counter_[(size_t)winner_]++;
+                    }
                 }
+            }
+            if (event.mouseButton.button == sf::Mouse::Right && game_over_) {
+                game_over_ = false;
+                game_logic_->ResetGame();
             }
         }
     }
@@ -76,58 +84,54 @@ void Engine::Render() {
     window_.clear(sf::Color::White);
 
     if (game_over_) {
-        sf::Text text_ln1;
-        text_ln1.setFont(standard_font_);
-        text_ln1.setString("Game Over");
-        text_ln1.setCharacterSize(100);
-        text_ln1.setFillColor(sf::Color::Black);
-        text_ln1.setStyle(sf::Text::Bold);
-        text_ln1.setOrigin(225.f, 0.f);
-        text_ln1.setPosition(sf::Vector2f{650.f, 300.f});
+        sf::Text game_over_text;
+        game_over_text.setFont(standard_font_);
+        game_over_text.setCharacterSize(60);
+        game_over_text.setFillColor(sf::Color::Black);
+        game_over_text.setStyle(sf::Text::Bold);
+        game_over_text.setPosition(sf::Vector2f{ 250.f, 10.f });
 
-        sf::Text text_ln2;
-        text_ln2.setFont(standard_font_);
         switch(winner_) {
         case Cell::kCross:
-            text_ln2.setString("Crosses Win");
-            text_ln2.setOrigin(250.f, 0.f);
+            game_over_text.setString("Crosses Win");
             break;
         case Cell::kZero:
-            text_ln2.setString("Zeroes Win");
-            text_ln2.setOrigin(250.f, 0.f);
+            game_over_text.setString("Zeroes Win");
             break;
         case Cell::kEmpty:
-            text_ln2.setString("DRAW");
-            text_ln2.setOrigin(100.f, 0.f);
+            game_over_text.setString("Stalemate");
             break;
         }
-        text_ln2.setCharacterSize(100);
-        text_ln2.setFillColor(sf::Color::Black);
-        text_ln2.setStyle(sf::Text::Bold);
-        text_ln2.setPosition(sf::Vector2f{ 650.f, 420.f });
 
-        window_.draw(text_ln1);
-        window_.draw(text_ln2);
+        window_.draw(game_over_text);
+
+        game_over_text.setCharacterSize(30);
+        game_over_text.setPosition(sf::Vector2f{ 410.f, 930.f });
+        game_over_text.setString("Press right mouse button to continue...");
+
+        window_.draw(game_over_text);
     }
-    else {
-        level_.Render(window_);
-        if (turn_) {
-            Level::DrawCross(window_, sf::Vector2f{ 10.f, 10.f });
-        }
-        else {
-            Level::DrawZero(window_, sf::Vector2f{ 1290.f - Level::cell_size_, 10.f });
-        }
+
+    sf::Text counter_text;
+    counter_text.setFont(standard_font_);
+    counter_text.setCharacterSize(60);
+    counter_text.setFillColor(sf::Color::Black);
+    counter_text.setStyle(sf::Text::Bold);
+    counter_text.setPosition(sf::Vector2f{ 1050.f, 10.f });
+    counter_text.setString(
+        std::to_string(outcome_counter_[0]) + " / " +
+        std::to_string(outcome_counter_[1]) + " / " +
+        std::to_string(outcome_counter_[2]));
+    window_.draw(counter_text);
+
+    display_->DrawShape(game_logic_->WhichTurn(), sf::Vector2f{ 10.f, 10.f });
+
+    display_->DrawBoard();
+    for (size_t i = 0; i < game_logic_->GetHeight(); ++i) {
+    	for (size_t j = 0; j < game_logic_->GetWidth(); ++j) {
+    		display_->DrawShapeInCell(game_logic_->GetCell(i,j), i, j);
+    	}
     }
+
     window_.display();
-}
-
-void Engine::Shutdown() {
-}
-
-bool Engine::IsGameOver() const {
-    return game_over_;
-}
-
-Cell Engine::Symbol(bool turn) {
-    return turn ? Cell::kCross : Cell::kZero;
 }

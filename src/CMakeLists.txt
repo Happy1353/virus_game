@@ -7,8 +7,11 @@ target_sources(sfml_example_game PRIVATE
     "main.cpp"
     "engine.h"
     "engine.cpp"
-    "level.h"
-    "level.cpp")
+    "common.h"
+    "display.h"
+    "display.cpp"
+    "game_logic.h"
+    "game_logic.cpp")
 
 if(WIN32)
     add_custom_command(
