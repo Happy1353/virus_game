@@ -3,6 +3,7 @@
 #include <cassert>
 #include <iostream>
 
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
 #include "common.h"
@@ -16,6 +17,16 @@ void Engine::LoadResources() {
     if (!standard_font_.loadFromFile("C:\\Windows\\Fonts\\arial.ttf")) {
         std::cout << "Error loading standard font" << std::endl;
     }
+
+    if (!sbuf_cross_click_.loadFromFile("putc.wav")) {
+        std::cout << "Error loading putc.wav" << std::endl;
+    }
+    sound_cross_click_.setBuffer(sbuf_cross_click_);
+
+    if (!sbuf_zero_click_.loadFromFile("putz.wav")) {
+        std::cout << "Error loading putz.wav" << std::endl;
+    }
+    sound_zero_click_.setBuffer(sbuf_zero_click_);
 }
 
 void Engine::CreateWindow() {
@@ -64,6 +75,14 @@ void Engine::UserInput() {
                 std::pair<size_t, size_t> mcoord;
                 if (display_->MapPixelToMatrixCoords(pixel, mcoord) &&
                     game_logic_->GetCell(mcoord.first, mcoord.second) == Cell::kEmpty) {
+                    switch (game_logic_->WhichTurn()) {
+                    case Cell::kCross:
+                        sound_cross_click_.play();
+                        break;
+                    case Cell::kZero:
+                        sound_zero_click_.play();
+                        break;
+                    }
                     game_logic_->MakeTurn(mcoord.first, mcoord.second);
                     game_over_ = game_logic_->TestVictoryConditions(winner_);
                     if (game_over_) {

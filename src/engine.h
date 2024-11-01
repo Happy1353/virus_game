@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
 #include "common.h"
@@ -18,6 +19,10 @@ public:
 	
 private:
 	sf::Font standard_font_;
+	sf::SoundBuffer sbuf_cross_click_;
+	sf::SoundBuffer sbuf_zero_click_;
+	sf::Sound sound_cross_click_;
+	sf::Sound sound_zero_click_;
 	sf::RenderWindow window_;
 	std::shared_ptr<GameLogic> game_logic_;
 	std::shared_ptr<Display> display_;
