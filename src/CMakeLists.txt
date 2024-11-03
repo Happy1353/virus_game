@@ -18,6 +18,7 @@ add_custom_command(
     COMMENT "Copy resource files"
     PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/res/arial.ttf
         ${CMAKE_SOURCE_DIR}/res/putc.wav
         ${CMAKE_SOURCE_DIR}/res/putz.wav
         $<TARGET_FILE_DIR:sfml_example_game>)

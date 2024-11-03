@@ -13,8 +13,7 @@ sf::RenderWindow& Engine::GetWindow() {
 }
 
 void Engine::LoadResources() {
-    // If you're working on Linux put path to standard font:
-    if (!standard_font_.loadFromFile("C:\\Windows\\Fonts\\arial.ttf")) {
+    if (!standard_font_.loadFromFile("arial.ttf")) {
         std::cout << "Error loading standard font" << std::endl;
     }
 
