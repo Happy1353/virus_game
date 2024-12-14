@@ -3,12 +3,13 @@
 
 #include "common.h"
 
-class GameLogic {
+class GameLogic
+{
 public:
 	GameLogic(size_t width, size_t height, int goal, Cell first_turn);
 	size_t GetWidth() const;
 	size_t GetHeight() const;
-	Cell GetCell (size_t x, size_t y) const;
+	Cell GetCell(size_t x, size_t y) const;
 	void PutCell(size_t x, size_t y, Cell e);
 	void MakeTurn(size_t x, size_t y);
 	Cell WhichTurn() const;
