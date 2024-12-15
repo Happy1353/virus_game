@@ -1,5 +1,10 @@
 #pragma once
 
-enum class Cell {
-	kEmpty = 0, kCross, kZero
+enum class Cell
+{
+	kEmpty = 0,
+	kCross,
+	kZero,
+	kCrossDead,
+	kZeroDead
 };

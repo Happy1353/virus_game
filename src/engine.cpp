@@ -96,8 +96,8 @@ void Engine::UserInput()
             {
                 sf::Vector2i pixel(event.mouseButton.x, event.mouseButton.y);
                 std::pair<size_t, size_t> mcoord;
-                if (display_->MapPixelToMatrixCoords(pixel, mcoord) &&
-                    game_logic_->GetCell(mcoord.first, mcoord.second) == Cell::kEmpty)
+                if (display_->MapPixelToMatrixCoords(pixel, mcoord))
+                // game_logic_->GetCell(mcoord.first, mcoord.second) == Cell::kEmpty)
                 {
                     switch (game_logic_->WhichTurn())
                     {
@@ -109,11 +109,11 @@ void Engine::UserInput()
                         break;
                     }
                     game_logic_->MakeTurn(mcoord.first, mcoord.second);
-                    game_over_ = game_logic_->TestVictoryConditions(winner_);
-                    if (game_over_)
-                    {
-                        outcome_counter_[(size_t)winner_]++;
-                    }
+                    // game_over_ = game_logic_->TestVictoryConditions(winner_);
+                    // if (game_over_)
+                    // {
+                    //     outcome_counter_[(size_t)winner_]++;
+                    // }
                 }
             }
             if (event.mouseButton.button == sf::Mouse::Right && game_over_)

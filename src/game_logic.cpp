@@ -43,28 +43,31 @@ void GameLogic::MakeTurn(size_t x, size_t y)
 {
 	Cell isTurn = WhichTurn();
 
-	if (turn_ && matrix_.at(0).at(0) == Cell::kEmpty)
+	if (MakeFirstAndSecondTurn(isTurn, x, y) && TestNearCells(isTurn, x, y))
 	{
-		if (x == 0 && y == 0)
+		PutCell(x, y, isTurn);
+		turn_ = !turn_;
+	}
+}
+
+bool GameLogic::MakeFirstAndSecondTurn(Cell isTurn, size_t x, size_t y)
+{
+	if (matrix_.at(0).at(0) == Cell::kEmpty || matrix_.at(9).at(9) == Cell::kEmpty)
+	{
+		if (turn_ && x == 0 && y == 0)
 		{
 			PutCell(0, 0, isTurn);
 			turn_ = !turn_;
 		}
-	}
-	else if (!turn_ && matrix_.at(9).at(9) == Cell::kEmpty)
-	{
-		if (x == 9 && y == 9)
+		else if (!turn_ && x == 9 && y == 9)
 		{
 			PutCell(9, 9, isTurn);
 			turn_ = !turn_;
 		}
+		return false;
 	}
-	else if (TestNearCells(isTurn, x, y))
-	{
-		assert(matrix_.at(x).at(y) == Cell::kEmpty);
-		PutCell(x, y, isTurn);
-		turn_ = !turn_;
-	}
+
+	return true;
 }
 
 Cell GameLogic::WhichTurn() const

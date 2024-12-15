@@ -13,6 +13,7 @@ public:
 	Cell GetCell(size_t x, size_t y) const;
 	void PutCell(size_t x, size_t y, Cell e);
 	void MakeTurn(size_t x, size_t y);
+	bool MakeFirstAndSecondTurn(Cell isTurn, size_t x, size_t y);
 	Cell WhichTurn() const;
 	bool TestVictoryConditions(Cell &outcome) const;
 	void ResetGame();
