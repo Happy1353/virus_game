@@ -14,7 +14,9 @@ public:
 	void PutCell(size_t x, size_t y, Cell e);
 	void MakeTurn(size_t x, size_t y);
 	bool MakeFirstAndSecondTurn(Cell isTurn, size_t x, size_t y);
+	bool CanEat(Cell isTurn, size_t x, size_t y) const;
 	Cell WhichTurn() const;
+	Cell WhitchDead(size_t x, size_t y) const;
 	bool TestVictoryConditions(Cell &outcome) const;
 	void ResetGame();
 
@@ -32,4 +34,6 @@ private:
 	int victory_goal_;
 	Cell first_turn_;
 	bool turn_;
+	int current_actions_;
+	const int actions_per_turn_ = 3;
 };

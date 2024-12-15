@@ -104,6 +104,12 @@ void Display::DrawShape(Cell shape, sf::Vector2f position) const
 	case Cell::kZero:
 		DrawZero(position);
 		break;
+	case Cell::kCrossDead:
+		DrawCrossDead(position);
+		break;
+	case Cell::kZeroDead:
+		DrawZeroDead(position);
+		break;
 	}
 }
 
@@ -117,6 +123,32 @@ void Display::DrawCross(sf::Vector2f position) const
 
 void Display::DrawZero(sf::Vector2f position) const
 {
+	zero_circ_.setPosition(position);
+	window_.draw(zero_circ_);
+}
+
+void Display::DrawCrossDead(sf::Vector2f position) const
+{
+	sf::RectangleShape background(sf::Vector2f(settings_.cell_size - 1, settings_.cell_size - 1));
+	background.setPosition(position + sf::Vector2f{-2, -2});
+	background.setFillColor(sf::Color::Blue);
+
+	window_.draw(background);
+
+	cross_rect1_.setPosition(position);
+	cross_rect2_.setPosition(position + sf::Vector2f{settings_.cell_size - 2 * settings_.cell_padding, 0.f});
+	window_.draw(cross_rect1_);
+	window_.draw(cross_rect2_);
+}
+
+void Display::DrawZeroDead(sf::Vector2f position) const
+{
+	sf::RectangleShape background(sf::Vector2f(settings_.cell_size - 1, settings_.cell_size - 1));
+	background.setPosition(position + sf::Vector2f{-2, -2});
+	background.setFillColor(sf::Color::Red);
+
+	window_.draw(background);
+
 	zero_circ_.setPosition(position);
 	window_.draw(zero_circ_);
 }

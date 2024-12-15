@@ -1,12 +1,13 @@
 #pragma once
-#include<vector>
-#include<cmath>
+#include <vector>
+#include <cmath>
 
 #include <SFML/Graphics.hpp>
 
 #include "common.h"
 
-struct DisplaySettings {
+struct DisplaySettings
+{
 	size_t board_width;
 	size_t board_height;
 	sf::Vector2f board_position;
@@ -18,19 +19,23 @@ struct DisplaySettings {
 	sf::Color zero_color;
 };
 
-class Display {
+class Display
+{
 public:
-	Display(sf::RenderWindow& window, DisplaySettings settings);
-	const DisplaySettings& ReadSettings() const;
+	Display(sf::RenderWindow &window, DisplaySettings settings);
+	const DisplaySettings &ReadSettings() const;
 	void DrawBoard() const;
 	void DrawShapeInCell(Cell shape, size_t i, size_t j) const;
 	void DrawShape(Cell shape, sf::Vector2f position) const;
 	void DrawCross(sf::Vector2f position) const;
 	void DrawZero(sf::Vector2f position) const;
+	void DrawCrossDead(sf::Vector2f position) const;
+	void DrawZeroDead(sf::Vector2f position) const;
+
 	bool MapPixelToMatrixCoords(sf::Vector2i pixel, std::pair<size_t, size_t> &mcoord) const;
 
 private:
-	sf::RenderWindow& window_;
+	sf::RenderWindow &window_;
 	DisplaySettings settings_;
 	std::vector<sf::Vertex> board_border_;
 	std::vector<sf::Vertex> board_rows_;

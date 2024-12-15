@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cassert>
 #include <stdexcept>
 
@@ -45,8 +46,23 @@ void GameLogic::MakeTurn(size_t x, size_t y)
 
 	if (MakeFirstAndSecondTurn(isTurn, x, y) && TestNearCells(isTurn, x, y))
 	{
-		PutCell(x, y, isTurn);
+		if (matrix_.at(x).at(y) == Cell::kEmpty)
+		{
+			PutCell(x, y, isTurn);
+			current_actions_++;
+		}
+		else if (CanEat(isTurn, x, y))
+		{
+			PutCell(x, y, WhitchDead(x, y));
+			current_actions_++;
+			std::cout << "eat" << std::endl;
+		}
+	}
+
+	if (current_actions_ >= actions_per_turn_)
+	{
 		turn_ = !turn_;
+		current_actions_ = 0;
 	}
 }
 
@@ -57,14 +73,16 @@ bool GameLogic::MakeFirstAndSecondTurn(Cell isTurn, size_t x, size_t y)
 		if (turn_ && x == 0 && y == 0)
 		{
 			PutCell(0, 0, isTurn);
-			turn_ = !turn_;
+			current_actions_++;
+			return false;
 		}
-		else if (!turn_ && x == 9 && y == 9)
+
+		if (!turn_ && x == 9 && y == 9)
 		{
 			PutCell(9, 9, isTurn);
-			turn_ = !turn_;
+			current_actions_++;
+			return false;
 		}
-		return false;
 	}
 
 	return true;
@@ -73,6 +91,24 @@ bool GameLogic::MakeFirstAndSecondTurn(Cell isTurn, size_t x, size_t y)
 Cell GameLogic::WhichTurn() const
 {
 	return turn_ ? Cell::kCross : Cell::kZero;
+}
+
+Cell GameLogic::WhitchDead(size_t x, size_t y) const
+{
+	return matrix_.at(x).at(y) == Cell::kCross ? Cell::kCrossDead : Cell::kZeroDead;
+}
+
+bool GameLogic::CanEat(Cell isTurn, size_t x, size_t y) const
+{
+	if (isTurn == Cell::kCross && matrix_.at(x).at(y) == Cell::kZero)
+	{
+		return true;
+	}
+	else if (isTurn == Cell::kZero && matrix_.at(x).at(y) == Cell::kCross)
+	{
+		return true;
+	}
+	return false;
 }
 
 bool GameLogic::TestVictoryConditions(Cell &outcome) const
@@ -111,6 +147,7 @@ bool GameLogic::TestVictoryConditions(Cell &outcome) const
 void GameLogic::ResetGame()
 {
 	turn_ = first_turn_ == Cell::kCross;
+	current_actions_ = 0;
 
 	for (size_t i = 0; i < width_; ++i)
 	{
