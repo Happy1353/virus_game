@@ -26,6 +26,7 @@ private:
 	bool TestRightDiagonal(Cell &outcome, size_t i, size_t j) const;
 	bool TestLeftDiagonal(Cell &outcome, size_t i, size_t j) const;
 	bool TestNearCells(Cell isTurn, size_t i, size_t j) const;
+	bool TestIsCainLive(Cell isTurn, Cell deadNode, size_t i, size_t j, std::map<std::pair<size_t, size_t>, bool> &visited) const;
 
 private:
 	std::vector<std::vector<Cell>> matrix_;

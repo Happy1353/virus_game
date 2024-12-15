@@ -55,7 +55,6 @@ void GameLogic::MakeTurn(size_t x, size_t y)
 		{
 			PutCell(x, y, WhitchDead(x, y));
 			current_actions_++;
-			std::cout << "eat" << std::endl;
 		}
 	}
 
@@ -230,6 +229,7 @@ bool GameLogic::TestLeftDiagonal(Cell &outcome, size_t i, size_t j) const
 	return true;
 }
 
+// Check if cell in good position
 bool GameLogic::TestNearCells(Cell e, size_t x, size_t y) const
 {
 	for (int dx = -1; dx <= 1; ++dx)
@@ -246,7 +246,50 @@ bool GameLogic::TestNearCells(Cell e, size_t x, size_t y) const
 			{
 				return true;
 			}
+
+			Cell deadNode = e == Cell::kCross ? Cell::kZeroDead : Cell::kCrossDead;
+			if (matrix_[nx][ny] == deadNode)
+			{
+				std::map<std::pair<size_t, size_t>, bool> visited;
+
+				if (TestIsCainLive(e, deadNode, nx, ny, visited))
+				{
+					return true;
+				}
+			}
 		}
 	}
+	return false;
+}
+
+// Check if cell near live chain
+bool GameLogic::TestIsCainLive(Cell node, Cell deadNode, size_t i, size_t j, std::map<std::pair<size_t, size_t>, bool> &visited) const
+{
+	if (visited[{i, j}] || i > 9 || j > 9 || i < 0 || j < 0 || (matrix_.at(i).at(j) != node && matrix_.at(i).at(j) != deadNode))
+	{
+		return false;
+	}
+
+	visited[{i, j}] = true;
+
+	if (matrix_[i][j] == node)
+	{
+		return true;
+	}
+
+	static const std::vector<std::pair<int, int>> directions = {
+		{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+
+	for (const auto &[dx, dy] : directions)
+	{
+		size_t ni = i + dx;
+		size_t nj = j + dy;
+
+		if (TestIsCainLive(node, deadNode, ni, nj, visited))
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
