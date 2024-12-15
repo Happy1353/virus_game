@@ -109,11 +109,18 @@ void Engine::UserInput()
                         break;
                     }
                     game_logic_->MakeTurn(mcoord.first, mcoord.second);
-                    // game_over_ = game_logic_->TestVictoryConditions(winner_);
-                    // if (game_over_)
-                    // {
-                    //     outcome_counter_[(size_t)winner_]++;
-                    // }
+
+                    game_over_ = game_logic_->TestVictoryConditions(game_logic_->WhichTurn());
+                    if (game_over_)
+                    {
+                        std::cout << "Game Over" << std::endl;
+                    }
+
+                    if (game_logic_->TestTurnIsOff())
+                    {
+
+                        game_logic_->ResetCurrentAction();
+                    }
                 }
             }
             if (event.mouseButton.button == sf::Mouse::Right && game_over_)

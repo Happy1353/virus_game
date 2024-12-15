@@ -17,7 +17,9 @@ public:
 	bool CanEat(Cell isTurn, size_t x, size_t y) const;
 	Cell WhichTurn() const;
 	Cell WhitchDead(size_t x, size_t y) const;
-	bool TestVictoryConditions(Cell &outcome) const;
+	bool TestVictoryConditions(Cell node) const;
+	bool TestTurnIsOff() const;
+	void ResetCurrentAction();
 	void ResetGame();
 
 private:

@@ -58,11 +58,22 @@ void GameLogic::MakeTurn(size_t x, size_t y)
 		}
 	}
 
-	if (current_actions_ >= actions_per_turn_)
-	{
-		turn_ = !turn_;
-		current_actions_ = 0;
-	}
+	// if (current_actions_ >= actions_per_turn_)
+	// {
+	// 	turn_ = !turn_;
+	// 	current_actions_ = 0;
+	// }
+}
+
+bool GameLogic::TestTurnIsOff() const
+{
+	return current_actions_ == actions_per_turn_ ? true : false;
+}
+
+void GameLogic::ResetCurrentAction()
+{
+	current_actions_ = 0;
+	turn_ = !turn_;
 }
 
 bool GameLogic::MakeFirstAndSecondTurn(Cell isTurn, size_t x, size_t y)
@@ -110,37 +121,31 @@ bool GameLogic::CanEat(Cell isTurn, size_t x, size_t y) const
 	return false;
 }
 
-bool GameLogic::TestVictoryConditions(Cell &outcome) const
+bool GameLogic::TestVictoryConditions(Cell node) const
 {
-	bool draw = true;
-	for (size_t i = 0; i < width_; ++i)
+	if (matrix_.at(0).at(0) != Cell::kEmpty && matrix_.at(9).at(9) != Cell::kEmpty)
 	{
-		for (size_t j = 0; j < width_; ++j)
+
+		for (size_t i = 0; i < 10; ++i)
 		{
-			if (matrix_[i][j] == Cell::kEmpty)
+			for (size_t j = 0; j < 10; ++j)
 			{
-				draw = false;
-				continue;
+				if (matrix_[i][j] != Cell::kEmpty)
+					continue;
+
+				if (TestNearCells(node, i, j))
+				{
+					return false;
+				}
 			}
-
-			if (TestRow(outcome, i, j))
-				return true;
-			if (TestColumn(outcome, i, j))
-				return true;
-			if (TestRightDiagonal(outcome, i, j))
-				return true;
-			if (TestLeftDiagonal(outcome, i, j))
-				return true;
 		}
-	}
 
-	if (draw)
-	{
-		outcome = Cell::kEmpty;
 		return true;
 	}
-
-	return false;
+	else
+	{
+		return false;
+	}
 }
 
 void GameLogic::ResetGame()
@@ -242,19 +247,23 @@ bool GameLogic::TestNearCells(Cell e, size_t x, size_t y) const
 			size_t nx = x + dx;
 			size_t ny = y + dy;
 
-			if (nx < width_ && ny < height_ && matrix_[nx][ny] == e)
+			if (nx >= 0 && nx < 10 && ny >= 0 && ny < 10)
 			{
-				return true;
-			}
 
-			Cell deadNode = e == Cell::kCross ? Cell::kZeroDead : Cell::kCrossDead;
-			if (matrix_[nx][ny] == deadNode)
-			{
-				std::map<std::pair<size_t, size_t>, bool> visited;
-
-				if (TestIsCainLive(e, deadNode, nx, ny, visited))
+				if (matrix_[nx][ny] == e)
 				{
 					return true;
+				}
+
+				Cell deadNode = e == Cell::kCross ? Cell::kZeroDead : Cell::kCrossDead;
+				if (matrix_[nx][ny] == deadNode)
+				{
+					std::map<std::pair<size_t, size_t>, bool> visited;
+
+					if (TestIsCainLive(e, deadNode, nx, ny, visited))
+					{
+						return true;
+					}
 				}
 			}
 		}
