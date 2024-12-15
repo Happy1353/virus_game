@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 
 #include "common.h"
 
@@ -21,6 +22,7 @@ private:
 	bool TestColumn(Cell &outcome, size_t i, size_t j) const;
 	bool TestRightDiagonal(Cell &outcome, size_t i, size_t j) const;
 	bool TestLeftDiagonal(Cell &outcome, size_t i, size_t j) const;
+	bool TestNearCells(Cell isTurn, size_t i, size_t j) const;
 
 private:
 	std::vector<std::vector<Cell>> matrix_;

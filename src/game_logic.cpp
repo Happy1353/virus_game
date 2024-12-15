@@ -41,14 +41,13 @@ void GameLogic::PutCell(size_t x, size_t y, Cell e)
 
 void GameLogic::MakeTurn(size_t x, size_t y)
 {
+	Cell isTurn = WhichTurn();
+
 	if (turn_ && matrix_.at(0).at(0) == Cell::kEmpty)
 	{
 		if (x == 0 && y == 0)
 		{
-			PutCell(0, 0, WhichTurn());
-		}
-		else
-		{
+			PutCell(0, 0, isTurn);
 			turn_ = !turn_;
 		}
 	}
@@ -56,20 +55,16 @@ void GameLogic::MakeTurn(size_t x, size_t y)
 	{
 		if (x == 9 && y == 9)
 		{
-			PutCell(9, 9, WhichTurn());
-		}
-		else
-		{
+			PutCell(9, 9, isTurn);
 			turn_ = !turn_;
 		}
 	}
-	else
+	else if (TestNearCells(isTurn, x, y))
 	{
 		assert(matrix_.at(x).at(y) == Cell::kEmpty);
-		PutCell(x, y, WhichTurn());
+		PutCell(x, y, isTurn);
+		turn_ = !turn_;
 	}
-
-	turn_ = !turn_;
 }
 
 Cell GameLogic::WhichTurn() const
@@ -193,4 +188,25 @@ bool GameLogic::TestLeftDiagonal(Cell &outcome, size_t i, size_t j) const
 
 	outcome = current;
 	return true;
+}
+
+bool GameLogic::TestNearCells(Cell e, size_t x, size_t y) const
+{
+	for (int dx = -1; dx <= 1; ++dx)
+	{
+		for (int dy = -1; dy <= 1; ++dy)
+		{
+			if (dx == 0 && dy == 0)
+				continue;
+
+			size_t nx = x + dx;
+			size_t ny = y + dy;
+
+			if (nx < width_ && ny < height_ && matrix_[nx][ny] == e)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
