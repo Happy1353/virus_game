@@ -40,7 +40,7 @@ void Engine::CreateWindow()
 
     const unsigned int ww = 700u;
     const unsigned int wh = 700u;
-    window_.create({ww, wh}, "CMake SFML Project", sf::Style::Titlebar | sf::Style::Close, settings);
+    window_.create({ww, wh}, "Viruses", sf::Style::Titlebar | sf::Style::Close, settings);
     window_.setFramerateLimit(100);
 }
 
@@ -92,12 +92,15 @@ void Engine::UserInput()
 
         if (event.type == sf::Event::MouseButtonPressed)
         {
+            if (event.mouseButton.button == sf::Mouse::Left && game_state_ == GameState::Menu)
+            {
+                UserInputMenu(event);
+            }
             if (event.mouseButton.button == sf::Mouse::Left && !game_over_)
             {
                 sf::Vector2i pixel(event.mouseButton.x, event.mouseButton.y);
                 std::pair<size_t, size_t> mcoord;
                 if (display_->MapPixelToMatrixCoords(pixel, mcoord))
-                // game_logic_->GetCell(mcoord.first, mcoord.second) == Cell::kEmpty)
                 {
                     switch (game_logic_->WhichTurn())
                     {
@@ -136,6 +139,11 @@ void Engine::Render()
 {
     window_.clear(sf::Color::White);
 
+    if (game_state_ == GameState::Menu)
+    {
+        display_->DrawMenu();
+    }
+
     if (game_over_)
     {
         sf::Text game_over_text;
@@ -167,28 +175,57 @@ void Engine::Render()
         window_.draw(game_over_text);
     }
 
-    sf::Text counter_text;
-    counter_text.setFont(standard_font_);
-    counter_text.setCharacterSize(60);
-    counter_text.setFillColor(sf::Color::Black);
-    counter_text.setStyle(sf::Text::Bold);
-    counter_text.setPosition(sf::Vector2f{1050.f, 10.f});
-    counter_text.setString(
-        std::to_string(outcome_counter_[0]) + " / " +
-        std::to_string(outcome_counter_[1]) + " / " +
-        std::to_string(outcome_counter_[2]));
-    window_.draw(counter_text);
-
-    // display_->DrawShape(game_logic_->WhichTurn(), sf::Vector2f{10.f, 10.f});
-
-    display_->DrawBoard();
-    for (size_t i = 0; i < game_logic_->GetHeight(); ++i)
+    if (game_state_ == GameState::Playing)
     {
-        for (size_t j = 0; j < game_logic_->GetWidth(); ++j)
+        sf::Text counter_text;
+        counter_text.setFont(standard_font_);
+        counter_text.setCharacterSize(60);
+        counter_text.setFillColor(sf::Color::Black);
+        counter_text.setStyle(sf::Text::Bold);
+        counter_text.setPosition(sf::Vector2f{1050.f, 10.f});
+        counter_text.setString(
+            std::to_string(outcome_counter_[0]) + " / " +
+            std::to_string(outcome_counter_[1]) + " / " +
+            std::to_string(outcome_counter_[2]));
+        window_.draw(counter_text);
+
+        // display_->DrawShape(game_logic_->WhichTurn(), sf::Vector2f{10.f, 10.f});
+
+        display_->DrawBoard();
+        for (size_t i = 0; i < game_logic_->GetHeight(); ++i)
         {
-            display_->DrawShapeInCell(game_logic_->GetCell(i, j), i, j);
+            for (size_t j = 0; j < game_logic_->GetWidth(); ++j)
+            {
+                display_->DrawShapeInCell(game_logic_->GetCell(i, j), i, j);
+            }
         }
     }
 
     window_.display();
+}
+
+void Engine::UserInputMenu(sf::Event event)
+{
+    sf::Vector2i pixel(event.mouseButton.x, event.mouseButton.y);
+    std::pair<size_t, size_t> mcoord;
+
+    std::optional<GameType> button_ = display_->DetectButtonClick(pixel);
+
+    if (button_ == GameType::Computer)
+    {
+        game_state_ = GameState::Playing;
+        // InitializeLogic(); // Инициализация логики игры
+    }
+    else if (button_ == GameType::Local)
+    {
+        game_state_ = GameState::Playing;
+        // InitializeLogic();
+        //  TODO: Добавить логику игры с ИИ
+    }
+    else if (button_ == GameType::Online)
+    {
+        game_state_ = GameState::Playing;
+        // InitializeLogic();
+        //  TODO: Добавить сетевую игру
+    }
 }

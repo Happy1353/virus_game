@@ -6,17 +6,19 @@
 #include "display.h"
 #include "game_logic.h"
 
-class Engine {
+class Engine
+{
 public:
-	sf::RenderWindow& GetWindow();
+	sf::RenderWindow &GetWindow();
 
 	void LoadResources();
 	void CreateWindow();
 	void InitializeLogic();
 	void InitializeGraphics();
 	void UserInput();
+	void UserInputMenu(sf::Event event);
 	void Render();
-	
+
 private:
 	sf::Font standard_font_;
 	sf::SoundBuffer sbuf_cross_click_;
@@ -28,5 +30,6 @@ private:
 	std::shared_ptr<Display> display_;
 	bool game_over_ = false;
 	Cell winner_ = Cell::kEmpty;
-	int outcome_counter_[3] = { 0, 0, 0 };
+	GameState game_state_ = GameState::Menu;
+	int outcome_counter_[3] = {0, 0, 0};
 };

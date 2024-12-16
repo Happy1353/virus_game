@@ -8,3 +8,17 @@ enum class Cell
 	kCrossDead,
 	kZeroDead
 };
+
+enum class GameState
+{
+	Menu,
+	Playing,
+	GameOver
+};
+
+enum class GameType
+{
+	Local = 0,
+	Computer,
+	Online
+};

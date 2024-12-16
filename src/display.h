@@ -25,14 +25,15 @@ public:
 	Display(sf::RenderWindow &window, DisplaySettings settings);
 	const DisplaySettings &ReadSettings() const;
 	void DrawBoard() const;
+	void DrawMenu();
 	void DrawShapeInCell(Cell shape, size_t i, size_t j) const;
 	void DrawShape(Cell shape, sf::Vector2f position) const;
 	void DrawCross(sf::Vector2f position) const;
 	void DrawZero(sf::Vector2f position) const;
 	void DrawCrossDead(sf::Vector2f position) const;
 	void DrawZeroDead(sf::Vector2f position) const;
-
 	bool MapPixelToMatrixCoords(sf::Vector2i pixel, std::pair<size_t, size_t> &mcoord) const;
+	std::optional<GameType> DetectButtonClick(sf::Vector2i pixel) const;
 
 private:
 	sf::RenderWindow &window_;
@@ -43,4 +44,5 @@ private:
 	mutable sf::RectangleShape cross_rect1_;
 	mutable sf::RectangleShape cross_rect2_;
 	mutable sf::CircleShape zero_circ_;
+	std::vector<sf::FloatRect> buttons_;
 };

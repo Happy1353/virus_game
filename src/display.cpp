@@ -152,3 +152,86 @@ void Display::DrawZeroDead(sf::Vector2f position) const
 	zero_circ_.setPosition(position);
 	window_.draw(zero_circ_);
 }
+
+void Display::DrawMenu()
+{
+	sf::Vector2u window_size = window_.getSize();
+
+	float button_width = 300.f;
+	float button_height = 50.f;
+	float button_spacing = 20.f;
+
+	float total_height = (button_height + button_spacing) * 3 - button_spacing;
+	sf::Vector2f button_position(
+		(window_size.x - button_width) / 2.f,
+		(window_size.y - total_height) / 2.f);
+
+	sf::Color button_color = sf::Color(100, 100, 200);
+	sf::Color text_color = sf::Color::White;
+
+	sf::Font font;
+	if (!font.loadFromFile("../res/arial.ttf"))
+	{
+		std::cerr << "Failed to load font!" << std::endl;
+		return;
+	}
+
+	std::vector<std::string> button_texts = {
+		"Play local ",
+		"Play with computer",
+		"Play online"};
+
+	buttons_.clear();
+
+	for (size_t i = 0; i < button_texts.size(); ++i)
+	{
+		sf::RectangleShape button(sf::Vector2f(button_width, button_height));
+		button.setPosition(button_position);
+		button.setFillColor(button_color);
+
+		sf::Text button_label;
+		button_label.setFont(font);
+		button_label.setString(button_texts[i]);
+		button_label.setCharacterSize(20);
+		button_label.setFillColor(text_color);
+
+		sf::FloatRect text_bounds = button_label.getLocalBounds();
+		button_label.setOrigin(text_bounds.left + text_bounds.width / 2.0f,
+							   text_bounds.top + text_bounds.height / 2.0f);
+		button_label.setPosition(
+			button_position.x + button_width / 2.f,
+			button_position.y + button_height / 2.f);
+
+		window_.draw(button);
+		window_.draw(button_label);
+
+		buttons_.emplace_back(button.getGlobalBounds());
+
+		button_position.y += button_height + button_spacing;
+	}
+}
+
+std::optional<GameType> Display::DetectButtonClick(sf::Vector2i pixel) const
+{
+	sf::Vector2f world_pos = window_.mapPixelToCoords(pixel);
+
+	for (size_t i = 0; i < buttons_.size(); ++i)
+	{
+		if (buttons_[i].contains(world_pos))
+		{
+			switch (i)
+			{
+			case 0:
+				return GameType::Local;
+			case 1:
+				return GameType::Computer;
+			case 2:
+				return GameType::Online;
+			default:
+				return std::nullopt;
+			}
+		}
+	}
+
+	return std::nullopt;
+}
