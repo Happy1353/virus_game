@@ -57,12 +57,6 @@ void GameLogic::MakeTurn(size_t x, size_t y)
 			current_actions_++;
 		}
 	}
-
-	// if (current_actions_ >= actions_per_turn_)
-	// {
-	// 	turn_ = !turn_;
-	// 	current_actions_ = 0;
-	// }
 }
 
 bool GameLogic::TestTurnIsOff() const
@@ -125,12 +119,11 @@ bool GameLogic::TestVictoryConditions(Cell node) const
 {
 	if (matrix_.at(0).at(0) != Cell::kEmpty && matrix_.at(9).at(9) != Cell::kEmpty)
 	{
-
 		for (size_t i = 0; i < 10; ++i)
 		{
 			for (size_t j = 0; j < 10; ++j)
 			{
-				if (matrix_[i][j] != Cell::kEmpty)
+				if (matrix_[i][j] != Cell::kEmpty || matrix_[i][j] != (node == Cell::kCross ? Cell::kZero : Cell::kCross))
 					continue;
 
 				if (TestNearCells(node, i, j))
@@ -162,80 +155,8 @@ void GameLogic::ResetGame()
 	}
 }
 
-bool GameLogic::TestRow(Cell &outcome, size_t i, size_t j) const
-{
-	Cell current = matrix_.at(i).at(j);
-	assert(current != Cell::kEmpty);
-
-	for (size_t k = 1; k < victory_goal_; ++k)
-	{
-		if (j + k >= width_)
-			return false;
-
-		if (matrix_[i][j + k] != current)
-			return false;
-	}
-
-	outcome = current;
-	return true;
-}
-
-bool GameLogic::TestColumn(Cell &outcome, size_t i, size_t j) const
-{
-	Cell current = matrix_.at(i).at(j);
-	assert(current != Cell::kEmpty);
-
-	for (size_t k = 1; k < victory_goal_; ++k)
-	{
-		if (i + k >= height_)
-			return false;
-
-		if (matrix_[i + k][j] != current)
-			return false;
-	}
-
-	outcome = current;
-	return true;
-}
-
-bool GameLogic::TestRightDiagonal(Cell &outcome, size_t i, size_t j) const
-{
-	Cell current = matrix_.at(i).at(j);
-	assert(current != Cell::kEmpty);
-
-	for (size_t k = 1; k < victory_goal_; ++k)
-	{
-		if (i + k >= height_ || j + k >= width_)
-			return false;
-
-		if (matrix_[i + k][j + k] != current)
-			return false;
-	}
-
-	outcome = current;
-	return true;
-}
-
-bool GameLogic::TestLeftDiagonal(Cell &outcome, size_t i, size_t j) const
-{
-	Cell current = matrix_.at(i).at(j);
-	assert(current != Cell::kEmpty);
-
-	for (size_t k = 1; k < victory_goal_; ++k)
-	{
-		if (i + k >= height_ || j < k)
-			return false;
-
-		if (matrix_[i + k][j - k] != current)
-			return false;
-	}
-
-	outcome = current;
-	return true;
-}
-
 // Check if cell in good position
-bool GameLogic::TestNearCells(Cell e, size_t x, size_t y) const
+bool GameLogic::TestNearCells(Cell e, size_t x, size_t y, bool testWinner = false) const
 {
 	for (int dx = -1; dx <= 1; ++dx)
 	{
@@ -253,6 +174,10 @@ bool GameLogic::TestNearCells(Cell e, size_t x, size_t y) const
 				if (matrix_[nx][ny] == e)
 				{
 					return true;
+				}
+
+				if (testWinner)
+				{
 				}
 
 				Cell deadNode = e == Cell::kCross ? Cell::kZeroDead : Cell::kCrossDead;
