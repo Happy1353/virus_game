@@ -15,21 +15,21 @@ sf::RenderWindow &Engine::GetWindow()
 
 void Engine::LoadResources()
 {
-    if (!standard_font_.loadFromFile("arial.ttf"))
+    if (!standard_font_.loadFromFile("../res/arial.ttf"))
     {
         std::cout << "Error loading standard font" << std::endl;
     }
 
-    if (!sbuf_cross_click_.loadFromFile("putc.wav"))
-    {
-        std::cout << "Error loading putc.wav" << std::endl;
-    }
-    sound_cross_click_.setBuffer(sbuf_cross_click_);
+    // if (!sbuf_cross_click_.loadFromFile("../res/putc.wav"))
+    // {
+    //     std::cout << "Error loading putc.wav" << std::endl;
+    // }
+    // sound_cross_click_.setBuffer(sbuf_cross_click_);
 
-    if (!sbuf_zero_click_.loadFromFile("putz.wav"))
-    {
-        std::cout << "Error loading putz.wav" << std::endl;
-    }
+    // if (!sbuf_zero_click_.loadFromFile("../res/putz.wav"))
+    // {
+    //     std::cout << "Error loading putz.wav" << std::endl;
+    // }
     sound_zero_click_.setBuffer(sbuf_zero_click_);
 }
 
@@ -85,6 +85,20 @@ void Engine::UserInput()
 {
     for (auto event = sf::Event{}; window_.pollEvent(event);)
     {
+        game_over_ = game_logic_->TestVictoryConditions(game_logic_->WhichTurn());
+        if (game_over_)
+        {
+            if (game_logic_->WhichTurn() == Cell::kCross)
+            {
+                winner_ = Cell::kZero;
+            }
+            else
+            {
+                winner_ = Cell::kCross;
+            }
+
+            game_state_ = GameState::GameOver;
+        }
         if (event.type == sf::Event::Closed)
         {
             window_.close();
@@ -98,38 +112,16 @@ void Engine::UserInput()
             }
             if (event.mouseButton.button == sf::Mouse::Left && !game_over_)
             {
-                sf::Vector2i pixel(event.mouseButton.x, event.mouseButton.y);
-                std::pair<size_t, size_t> mcoord;
-                if (display_->MapPixelToMatrixCoords(pixel, mcoord))
-                {
-                    switch (game_logic_->WhichTurn())
-                    {
-                    case Cell::kCross:
-                        sound_cross_click_.play();
-                        break;
-                    case Cell::kZero:
-                        sound_zero_click_.play();
-                        break;
-                    }
-                    game_logic_->MakeTurn(mcoord.first, mcoord.second);
-
-                    game_over_ = game_logic_->TestVictoryConditions(game_logic_->WhichTurn());
-                    if (game_over_)
-                    {
-                        std::cout << "Game Over" << std::endl;
-                    }
-
-                    if (game_logic_->TestTurnIsOff())
-                    {
-
-                        game_logic_->ResetCurrentAction();
-                    }
-                }
+                UserInputGame(event);
             }
-            if (event.mouseButton.button == sf::Mouse::Right && game_over_)
+            if (game_state_ == GameState::GameOver)
             {
                 game_over_ = false;
                 game_logic_->ResetGame();
+            }
+            if (event.mouseButton.button == sf::Mouse::Right && game_state_ == GameState::GameOver)
+            {
+                game_state_ = GameState::Menu;
             }
         }
     }
@@ -144,14 +136,13 @@ void Engine::Render()
         display_->DrawMenu();
     }
 
-    if (game_over_)
+    if (game_state_ == GameState::GameOver)
     {
         sf::Text game_over_text;
         game_over_text.setFont(standard_font_);
         game_over_text.setCharacterSize(60);
         game_over_text.setFillColor(sf::Color::Black);
         game_over_text.setStyle(sf::Text::Bold);
-        game_over_text.setPosition(sf::Vector2f{250.f, 10.f});
 
         switch (winner_)
         {
@@ -166,11 +157,23 @@ void Engine::Render()
             break;
         }
 
+        sf::Vector2u window_size = window_.getSize();
+
+        sf::FloatRect text_bounds = game_over_text.getGlobalBounds();
+
+        game_over_text.setPosition(
+            (window_size.x - text_bounds.width) / 2.f,
+            (window_size.y - text_bounds.height) / 4.f);
+
         window_.draw(game_over_text);
 
         game_over_text.setCharacterSize(30);
-        game_over_text.setPosition(sf::Vector2f{410.f, 930.f});
         game_over_text.setString("Press right mouse button to continue...");
+
+        text_bounds = game_over_text.getGlobalBounds();
+        game_over_text.setPosition(
+            (window_size.x - text_bounds.width) / 2.f,
+            window_size.y - text_bounds.height - 20.f);
 
         window_.draw(game_over_text);
     }
@@ -214,18 +217,38 @@ void Engine::UserInputMenu(sf::Event event)
     if (button_ == GameType::Computer)
     {
         game_state_ = GameState::Playing;
-        // InitializeLogic(); // Инициализация логики игры
     }
     else if (button_ == GameType::Local)
     {
         game_state_ = GameState::Playing;
-        // InitializeLogic();
-        //  TODO: Добавить логику игры с ИИ
     }
     else if (button_ == GameType::Online)
     {
         game_state_ = GameState::Playing;
-        // InitializeLogic();
-        //  TODO: Добавить сетевую игру
+    }
+}
+
+void Engine::UserInputGame(sf::Event event)
+{
+    sf::Vector2i pixel(event.mouseButton.x, event.mouseButton.y);
+    std::pair<size_t, size_t> mcoord;
+    if (display_->MapPixelToMatrixCoords(pixel, mcoord))
+    {
+        switch (game_logic_->WhichTurn())
+        {
+        case Cell::kCross:
+            sound_cross_click_.play();
+            break;
+        case Cell::kZero:
+            sound_zero_click_.play();
+            break;
+        }
+        game_logic_->MakeTurn(mcoord.first, mcoord.second);
+
+        if (game_logic_->TestTurnIsOff())
+        {
+
+            game_logic_->ResetCurrentAction();
+        }
     }
 }

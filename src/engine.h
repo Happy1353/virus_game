@@ -17,6 +17,7 @@ public:
 	void InitializeGraphics();
 	void UserInput();
 	void UserInputMenu(sf::Event event);
+	void UserInputGame(sf::Event event);
 	void Render();
 
 private:

@@ -123,7 +123,7 @@ bool GameLogic::TestVictoryConditions(Cell node) const
 		{
 			for (size_t j = 0; j < 10; ++j)
 			{
-				if (matrix_[i][j] != Cell::kEmpty || matrix_[i][j] != (node == Cell::kCross ? Cell::kZero : Cell::kCross))
+				if (matrix_[i][j] != Cell::kEmpty && matrix_[i][j] != (node == Cell::kCross ? Cell::kZero : Cell::kCross))
 					continue;
 
 				if (TestNearCells(node, i, j))
@@ -156,7 +156,7 @@ void GameLogic::ResetGame()
 }
 
 // Check if cell in good position
-bool GameLogic::TestNearCells(Cell e, size_t x, size_t y, bool testWinner = false) const
+bool GameLogic::TestNearCells(Cell e, size_t x, size_t y) const
 {
 	for (int dx = -1; dx <= 1; ++dx)
 	{
@@ -174,10 +174,6 @@ bool GameLogic::TestNearCells(Cell e, size_t x, size_t y, bool testWinner = fals
 				if (matrix_[nx][ny] == e)
 				{
 					return true;
-				}
-
-				if (testWinner)
-				{
 				}
 
 				Cell deadNode = e == Cell::kCross ? Cell::kZeroDead : Cell::kCrossDead;
