@@ -21,12 +21,9 @@ public:
 	bool TestTurnIsOff() const;
 	void ResetCurrentAction();
 	void ResetGame();
+	int GetAction() const;
 
 private:
-	bool TestRow(Cell &outcome, size_t i, size_t j) const;
-	bool TestColumn(Cell &outcome, size_t i, size_t j) const;
-	bool TestRightDiagonal(Cell &outcome, size_t i, size_t j) const;
-	bool TestLeftDiagonal(Cell &outcome, size_t i, size_t j) const;
 	bool TestNearCells(Cell isTurn, size_t i, size_t j) const;
 	bool TestIsCainLive(Cell isTurn, Cell deadNode, size_t i, size_t j, std::map<std::pair<size_t, size_t>, bool> &visited) const;
 

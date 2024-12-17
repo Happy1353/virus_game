@@ -85,20 +85,6 @@ void Engine::UserInput()
 {
     for (auto event = sf::Event{}; window_.pollEvent(event);)
     {
-        game_over_ = game_logic_->TestVictoryConditions(game_logic_->WhichTurn());
-        if (game_over_)
-        {
-            if (game_logic_->WhichTurn() == Cell::kCross)
-            {
-                winner_ = Cell::kZero;
-            }
-            else
-            {
-                winner_ = Cell::kCross;
-            }
-
-            game_state_ = GameState::GameOver;
-        }
         if (event.type == sf::Event::Closed)
         {
             window_.close();
@@ -245,10 +231,23 @@ void Engine::UserInputGame(sf::Event event)
         }
         game_logic_->MakeTurn(mcoord.first, mcoord.second);
 
+        game_over_ = game_logic_->TestVictoryConditions(game_logic_->WhichTurn());
+        if (game_over_)
+        {
+            winner_ = game_logic_->WhichTurn() == Cell::kZero ? Cell::kCross : Cell::kZero;
+            game_state_ = GameState::GameOver;
+        }
+
         if (game_logic_->TestTurnIsOff())
         {
 
             game_logic_->ResetCurrentAction();
+            game_over_ = game_logic_->TestVictoryConditions(game_logic_->WhichTurn());
+            if (game_over_)
+            {
+                winner_ = game_logic_->WhichTurn() == Cell::kZero ? Cell::kCross : Cell::kZero;
+                game_state_ = GameState::GameOver;
+            }
         }
     }
 }

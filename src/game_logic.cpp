@@ -223,3 +223,8 @@ bool GameLogic::TestIsCainLive(Cell node, Cell deadNode, size_t i, size_t j, std
 
 	return false;
 }
+
+int GameLogic::GetAction() const
+{
+	return current_actions_;
+};
