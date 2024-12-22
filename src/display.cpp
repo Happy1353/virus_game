@@ -153,7 +153,7 @@ void Display::DrawZeroDead(sf::Vector2f position) const
 	window_.draw(zero_circ_);
 }
 
-void Display::DrawMenu()
+void Display::DrawMenu(sf::Font font)
 {
 	sf::Vector2u window_size = window_.getSize();
 
@@ -168,13 +168,6 @@ void Display::DrawMenu()
 
 	sf::Color button_color = sf::Color(100, 100, 200);
 	sf::Color text_color = sf::Color::White;
-
-	sf::Font font;
-	if (!font.loadFromFile("../res/arial.ttf"))
-	{
-		std::cerr << "Failed to load font!" << std::endl;
-		return;
-	}
 
 	std::vector<std::string> button_texts = {
 		"Play local ",

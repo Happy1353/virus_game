@@ -25,7 +25,7 @@ public:
 	Display(sf::RenderWindow &window, DisplaySettings settings);
 	const DisplaySettings &ReadSettings() const;
 	void DrawBoard() const;
-	void DrawMenu();
+	void DrawMenu(sf::Font font);
 	void DrawShapeInCell(Cell shape, size_t i, size_t j) const;
 	void DrawShape(Cell shape, sf::Vector2f position) const;
 	void DrawCross(sf::Vector2f position) const;

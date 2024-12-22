@@ -119,7 +119,7 @@ void Engine::Render()
 
     if (game_state_ == GameState::Menu)
     {
-        display_->DrawMenu();
+        display_->DrawMenu(standard_font_);
     }
 
     if (game_state_ == GameState::GameOver)
