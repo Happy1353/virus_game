@@ -198,7 +198,7 @@ void Engine::UserInputMenu(sf::Event event)
     sf::Vector2i pixel(event.mouseButton.x, event.mouseButton.y);
     std::pair<size_t, size_t> mcoord;
 
-    std::optional<GameType> button_ = display_->DetectButtonClick(pixel);
+    GameType button_ = display_->DetectButtonClick(pixel);
 
     if (button_ == GameType::Computer)
     {

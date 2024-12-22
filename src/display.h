@@ -33,7 +33,7 @@ public:
 	void DrawCrossDead(sf::Vector2f position) const;
 	void DrawZeroDead(sf::Vector2f position) const;
 	bool MapPixelToMatrixCoords(sf::Vector2i pixel, std::pair<size_t, size_t> &mcoord) const;
-	std::optional<GameType> DetectButtonClick(sf::Vector2i pixel) const;
+	GameType DetectButtonClick(sf::Vector2i pixel) const;
 
 private:
 	sf::RenderWindow &window_;

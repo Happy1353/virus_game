@@ -211,7 +211,7 @@ void Display::DrawMenu()
 	}
 }
 
-std::optional<GameType> Display::DetectButtonClick(sf::Vector2i pixel) const
+GameType Display::DetectButtonClick(sf::Vector2i pixel) const
 {
 	sf::Vector2f world_pos = window_.mapPixelToCoords(pixel);
 
@@ -228,10 +228,10 @@ std::optional<GameType> Display::DetectButtonClick(sf::Vector2i pixel) const
 			case 2:
 				return GameType::Online;
 			default:
-				return std::nullopt;
+				break;
 			}
 		}
 	}
 
-	return std::nullopt;
+	return GameType::Unknown;
 }

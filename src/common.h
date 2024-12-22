@@ -20,5 +20,6 @@ enum class GameType
 {
 	Local = 0,
 	Computer,
-	Online
+	Online,
+	Unknown
 };
