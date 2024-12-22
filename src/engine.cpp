@@ -15,21 +15,21 @@ sf::RenderWindow &Engine::GetWindow()
 
 void Engine::LoadResources()
 {
-    if (!standard_font_.loadFromFile("../res/arial.ttf"))
+    if (!standard_font_.loadFromFile("arial.ttf"))
     {
         std::cout << "Error loading standard font" << std::endl;
     }
 
-    // if (!sbuf_cross_click_.loadFromFile("../res/putc.wav"))
-    // {
-    //     std::cout << "Error loading putc.wav" << std::endl;
-    // }
-    // sound_cross_click_.setBuffer(sbuf_cross_click_);
+    if (!sbuf_cross_click_.loadFromFile("putc.wav"))
+    {
+        std::cout << "Error loading putc.wav" << std::endl;
+    }
+    sound_cross_click_.setBuffer(sbuf_cross_click_);
 
-    // if (!sbuf_zero_click_.loadFromFile("../res/putz.wav"))
-    // {
-    //     std::cout << "Error loading putz.wav" << std::endl;
-    // }
+    if (!sbuf_zero_click_.loadFromFile("putz.wav"))
+    {
+        std::cout << "Error loading putz.wav" << std::endl;
+    }
     sound_zero_click_.setBuffer(sbuf_zero_click_);
 }
 
